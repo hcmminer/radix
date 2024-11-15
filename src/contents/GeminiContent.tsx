@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
+import { createRoot } from "react-dom/client";
 import TranslatorPopup from "~components/TranslatorPopup";
 import cssText from "data-text:~style.css"
 import type { PlasmoCSConfig } from "plasmo"
 
 import "~base.css"
 
-export const config: PlasmoCSConfig = {
-  matches: ["https://translate.google.com/*"]
-}
+
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -15,7 +14,7 @@ export const getStyle = () => {
   return style
 }
 
-const PlasmoOverlay = () => {
+const GeminiContent = () => {
   const [selectedText, setSelectedText] = useState<string | null>(null);
   const [translatedText, setTranslatedText] = useState<string | null>(null);
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -32,7 +31,6 @@ const PlasmoOverlay = () => {
       chrome.runtime.sendMessage(
         { type: "TRANSLATE_TEXT", text },
         (response) => {
-          console.log("response: ", response);
           setTranslatedText(response.translatedText || "Không thể dịch được.");
         }
       );
@@ -49,4 +47,7 @@ const PlasmoOverlay = () => {
   return <TranslatorPopup text={translatedText} position={position} />;
 };
 
-export default PlasmoOverlay
+// Render component popup
+const root = document.createElement("div");
+document.body.appendChild(root);
+createRoot(root).render(<GeminiContent />);
