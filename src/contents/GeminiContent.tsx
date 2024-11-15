@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import TranslatorPopup from "~components/TranslatorPopup";
+import { useTranslationStore } from "~store/translationStore";
+
 import cssText from "data-text:~style.css"
 import type { PlasmoCSConfig } from "plasmo"
 
@@ -19,6 +21,9 @@ const GeminiContent = () => {
   const [translatedText, setTranslatedText] = useState<string | null>(null);
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
+  // Sử dụng Zustand store
+  const { getTranslation, addTranslation, clearExpiredCache } = useTranslationStore();
+
   const handleTextClick = (event: MouseEvent) => {
     const selection = window.getSelection();
     const text = selection?.toString().trim();
@@ -27,19 +32,35 @@ const GeminiContent = () => {
       setSelectedText(text);
       setPosition({ x: event.pageX, y: event.pageY });
 
-      // Gửi yêu cầu đến background script để gọi API dịch văn bản
-      chrome.runtime.sendMessage(
-        { type: "TRANSLATE_TEXT", text },
-        (response) => {
-          setTranslatedText(response.translatedText || "Không thể dịch được.");
-        }
-      );
+      // Kiểm tra cache bằng Zustand
+      const cachedTranslation = getTranslation(text);
+      if (cachedTranslation) {
+        setTranslatedText(cachedTranslation); // Dùng cache nếu có
+      } else {
+        // Gọi API nếu không có trong cache
+        chrome.runtime.sendMessage(
+          { type: "TRANSLATE_TEXT", text },
+          (response) => {
+            const translated = response.translatedText || "Không thể dịch được.";
+            addTranslation(text, translated); // Lưu vào cache
+            setTranslatedText(translated);
+          }
+        );
+      }
     }
   };
 
   useEffect(() => {
+    // Xóa cache hết hạn mỗi 5 phút
+    const interval = setInterval(() => {
+      clearExpiredCache();
+    }, 5 * 60 * 1000);
+
     document.addEventListener("click", handleTextClick);
-    return () => document.removeEventListener("click", handleTextClick);
+    return () => {
+      document.removeEventListener("click", handleTextClick);
+      clearInterval(interval);
+    };
   }, []);
 
   if (!selectedText || !translatedText) return null;
