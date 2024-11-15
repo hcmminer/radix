@@ -3,18 +3,16 @@ import { createRoot } from "react-dom/client";
 import TranslatorPopup from "~components/TranslatorPopup";
 import { useTranslationStore } from "~store/translationStore";
 
-import cssText from "data-text:~style.css"
-import type { PlasmoCSConfig } from "plasmo"
+import cssText from "data-text:~style.css";
+import type { PlasmoCSConfig } from "plasmo";
 
-import "~base.css"
-
-
+import "~base.css";
 
 export const getStyle = () => {
-  const style = document.createElement("style")
-  style.textContent = cssText
-  return style
-}
+  const style = document.createElement("style");
+  style.textContent = cssText;
+  return style;
+};
 
 const GeminiContent = () => {
   const [selectedText, setSelectedText] = useState<string | null>(null);
@@ -56,6 +54,7 @@ const GeminiContent = () => {
       clearExpiredCache();
     }, 5 * 60 * 1000);
 
+    // Lắng nghe sự kiện click
     document.addEventListener("click", handleTextClick);
     return () => {
       document.removeEventListener("click", handleTextClick);
@@ -63,9 +62,23 @@ const GeminiContent = () => {
     };
   }, []);
 
+  const closePopup = () => {
+    setSelectedText(null);
+    setTranslatedText(null);
+  };
+
   if (!selectedText || !translatedText) return null;
 
-  return <TranslatorPopup text={translatedText} position={position} />;
+  return (
+    <>
+      {/* Hiển thị TranslatorPopup */}
+      <TranslatorPopup
+        text={translatedText} // Bản dịch từ API
+        position={position}
+        onClose={closePopup}
+      />
+    </>
+  );
 };
 
 // Render component popup

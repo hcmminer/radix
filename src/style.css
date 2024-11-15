@@ -3,3 +3,62 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.PopoverContent {
+    background-color: white;
+    border-radius: 4px;
+    padding: 16px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.PopoverArrow {
+    fill: white;
+}
+
+.Fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.Label {
+    font-size: 12px;
+    color: #555;
+}
+
+.Input {
+    padding: 4px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.PopoverClose {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+.IconButton {
+    background-color: white;
+    border: none;
+    border-radius: 50%;
+    padding: 8px;
+    cursor: pointer;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.Text {
+    margin: 0;
+    font-size: 14px;
+    color: #333;
+}
